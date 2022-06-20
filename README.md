@@ -27,3 +27,9 @@
     ```sh
     python main.py
     ```
+
+1. Test the application 
+
+    ```sh
+    pytest
+    ```
