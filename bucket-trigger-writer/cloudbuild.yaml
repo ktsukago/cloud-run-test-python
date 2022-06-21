@@ -3,7 +3,7 @@ steps:
   - name: python
     entrypoint: pip
     args: ["install", "-r", "bucket-trigger-writer/requirements.txt", "--user"]
-  # Install pyttest
+  # Install pytest
   - name: python
     entrypoint: pip
     args: ["install", "pytest", "--user"]
