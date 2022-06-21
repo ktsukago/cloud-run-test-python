@@ -21,20 +21,20 @@ from flask import Flask, request
 app = Flask(__name__)
 # [END eventarc_audit_storage_server]
 
+def gcs_object(ce_subject):
+    return ce_subject.split("/")[-1]
 
 # [START eventarc_audit_storage_handler]
 @app.route('/', methods=['POST'])
 def index():
     # Gets the GCS bucket name from the CloudEvent header
     # Example: "storage.googleapis.com/projects/_/buckets/my-bucket"
+    # objects/GossyTsukagoshi012.jpg
     bucket = request.headers.get('ce-subject')
-
-    print(f"request detail: {request}")
 
     print(f"Detected change in Cloud Storage bucket: {bucket}")
     return (f"Detected change in Cloud Storage bucket: {bucket}", 200)
 # [END eventarc_audit_storage_handler]
-
 
 # [START eventarc_audit_storage_server]
 if __name__ == "__main__":

@@ -36,10 +36,29 @@ def client():
 
 def test_endpoint(client, capsys):
     test_headers = copy.copy(binary_headers)
-    test_headers['Ce-Subject'] = 'test-subject'
+    # Ce-Subject にファイル名が入る objects/filename
+    test_headers['Ce-Subject'] = 'objects/Testfile.jpg'
 
     r = client.post('/', headers=test_headers)
     assert r.status_code == 200
 
     out, _ = capsys.readouterr()
     assert f"Detected change in Cloud Storage bucket: {test_headers['Ce-Subject']}" in out
+
+    #お試しテスト
+    r = client.get('/', headers=test_headers)
+    assert r.status_code == 405
+
+
+
+# request データからupload したファイル名を取り出せること
+def test_gcs_object():
+    test_headers = copy.copy(binary_headers)
+    test_headers['Ce-Subject'] = 'objects/Testfile.jpg'
+    assert main.gcs_object(test_headers['Ce-Subject']) == 'Testfile.jpg'
+
+    test_headers['Ce-Subject'] = 'Testfile.jpg'
+    assert main.gcs_object(test_headers['Ce-Subject']) == 'Testfile.jpg'
+
+    test_headers['Ce-Subject'] = 'objects/hoge/Testfile.jpg'
+    assert main.gcs_object(test_headers['Ce-Subject']) == 'Testfile.jpg'
