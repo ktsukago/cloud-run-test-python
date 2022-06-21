@@ -1,4 +1,13 @@
 steps:
+  # Install dependencies
+  - name: python
+    entrypoint: pip
+    args: ["install", "-r", "requirements.txt", "--user"]
+  # Run unit tests
+  - name: python
+    entrypoint: python
+    args: ["-m", "pytest", "--junitxml=${SHORT_SHA}_test_log.xml"] 
+  # Docker build
   - name: gcr.io/cloud-builders/docker
     args:
       - build
@@ -9,11 +18,13 @@ steps:
       - '-f'
       - bucket-trigger-writer/Dockerfile
     id: Build
+  # Docker push
   - name: gcr.io/cloud-builders/docker
     args:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
     id: Push
+  # Deploy to cloud run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     args:
       - run
