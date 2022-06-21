@@ -3,14 +3,17 @@ steps:
   - name: python
     entrypoint: pip
     args: ["install", "-r", "bucket-trigger-writer/requirements.txt", "--user"]
+
   # Install pytest
   - name: python
     entrypoint: pip
     args: ["install", "pytest", "--user"]
+
   # Run unit tests
   - name: python
     entrypoint: python
     args: ["-m", "pytest", "--junitxml=${SHORT_SHA}_test_log.xml"] 
+
   # Docker build
   - name: gcr.io/cloud-builders/docker
     args:
@@ -22,6 +25,7 @@ steps:
       - '-f'
       - bucket-trigger-writer/Dockerfile
     id: Build
+
   # Docker push
   - name: gcr.io/cloud-builders/docker
     args:
