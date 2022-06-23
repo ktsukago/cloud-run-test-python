@@ -46,7 +46,7 @@ def index():
     db_pass = os.environ.get("DB_PASS")
     db_name = "quickstart_db"
     table_name = "aupay"
-    db = init_db(db_user, db_pass, db_name, table_name)
+    db = init_db(db_user=db_user, db_pass=db_pass, db_name=db_name,table_name=table_name,db_host="tap-samples:asia-northeast1:tap-samples-aupay")
 
     return (f"Detected change in Cloud Storage bucket: {file}", 200)
 # [END eventarc_audit_storage_handler]
