@@ -58,6 +58,7 @@ def test_endpoint(client, capsys, mocker):
     # app から product_data.write("object_name")みたいにして、product_data経由でfirestore に書き込む
     # products.write は 1回コールされているか、writeにそのままデータがわたっているかを検証できればよい
 
+
 # request データからupload したファイル名を取り出せること
 def test_gcs_object():
     test_headers = copy.copy(binary_headers)

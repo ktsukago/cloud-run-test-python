@@ -2,12 +2,7 @@ steps:
   # Install dependencies
   - name: python
     entrypoint: pip
-    args: ["install", "-r", "bucket-trigger-writer/requirements.txt", "--user"]
-
-  # Install pytest
-  - name: python
-    entrypoint: pip
-    args: ["install", "pytest", "--user"]
+    args: ["install", "-r", "bucket-trigger-writer/requirements-test.txt", "--user"]
 
   # Run unit tests
   - name: python
