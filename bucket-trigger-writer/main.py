@@ -14,15 +14,14 @@
 
 # [START eventarc_audit_storage_server]
 import os
+from pyclbr import Class
 
 from flask import Flask, request
 
+from google.cloud import firestore
 
 app = Flask(__name__)
 # [END eventarc_audit_storage_server]
-
-def gcs_object(ce_subject):
-    return ce_subject.split("/")[-1]
 
 # [START eventarc_audit_storage_handler]
 @app.route('/', methods=['POST'])
@@ -31,10 +30,15 @@ def index():
     # Example: "storage.googleapis.com/projects/_/buckets/my-bucket"
     # objects/GossyTsukagoshi012.jpg
     bucket = request.headers.get('ce-subject')
-
+    file = gcs_object(bucket)
     print(f"Detected change in Cloud Storage bucket: {bucket}")
-    return (f"Detected change in Cloud Storage bucket: {bucket}", 200)
+    secret = os.environ.get("tap-secret", "")
+    print(f"os get env tap-secret: {secret}")
+    return (f"Detected change in Cloud Storage bucket: {file}", 200)
 # [END eventarc_audit_storage_handler]
+
+def gcs_object(ce_subject):
+    return ce_subject.split("/")[-1]
 
 # [START eventarc_audit_storage_server]
 if __name__ == "__main__":

@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
+from unittest import mock
 
 from uuid import uuid4
 
 import pytest
-
 import main
 
 
@@ -29,27 +29,34 @@ binary_headers = {
 
 
 @pytest.fixture
-def client():
+def client(mocker):
     main.app.testing = True
     return main.app.test_client()
 
 
-def test_endpoint(client, capsys):
+# eventarcから入ってきた object 名を取得してfirestore に書き込むことを確認したい
+def test_endpoint(client, capsys, mocker):
+
     test_headers = copy.copy(binary_headers)
     # Ce-Subject にファイル名が入る objects/filename
     test_headers['Ce-Subject'] = 'objects/Testfile.jpg'
-
+    mock_gcs_object = mocker.patch("main.gcs_object")
+    
     r = client.post('/', headers=test_headers)
     assert r.status_code == 200
+    mock_gcs_object.assert_called_once_with(test_headers['Ce-Subject'])
+
 
     out, _ = capsys.readouterr()
     assert f"Detected change in Cloud Storage bucket: {test_headers['Ce-Subject']}" in out
 
-    #お試しテスト
-    r = client.get('/', headers=test_headers)
-    assert r.status_code == 405
 
+    # write = mocker.patch('main.products')
+    # write.assert_call_once_with(test_headers['Ce-Subject'])
 
+    # firestore にかきこめていることの確認
+    # app から product_data.write("object_name")みたいにして、product_data経由でfirestore に書き込む
+    # products.write は 1回コールされているか、writeにそのままデータがわたっているかを検証できればよい
 
 # request データからupload したファイル名を取り出せること
 def test_gcs_object():
