@@ -46,8 +46,15 @@ def index():
     db_pass = os.environ.get("DB_PASS")
     db_name = "quickstart_db"
     table_name = "aupay"
+
     db = init_db(db_user=db_user, db_pass=db_pass, db_name=db_name,table_name=table_name,db_socket_dir="/cloudsql", instance_connection_name="tap-samples:asia-northeast1:tap-samples-aupay")
 
+    # insert to aupay tables
+    with db.connect() as conn:
+        conn.execute(
+            f"INSERT INTO {table_name} "
+            "( vote_id, time_cast, team, voter_email) VALUES(1, '2020-04-01 08:30:00', 'hoge', 'hoge@gmail.com');"
+        )
     return (f"Detected change in Cloud Storage bucket: {file}", 200)
 # [END eventarc_audit_storage_handler]
 
