@@ -32,8 +32,12 @@ def index():
     bucket = request.headers.get('ce-subject')
     file = gcs_object(bucket)
     print(f"Detected change in Cloud Storage bucket: {bucket}")
-    secret = os.environ.get("tap-secret", "")
+    secret = os.environ.get("tap-secret")
     print(f"os get env tap-secret: {secret}")
+
+    test = os.environ.get("TAP_TEST")
+    print(f"os get env tap-secret: {test}")
+
     return (f"Detected change in Cloud Storage bucket: {file}", 200)
 # [END eventarc_audit_storage_handler]
 
