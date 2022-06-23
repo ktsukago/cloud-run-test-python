@@ -15,6 +15,7 @@ import copy
 from unittest import mock
 
 from uuid import uuid4
+from google.cloud import storage
 
 import pytest
 import main
@@ -24,7 +25,8 @@ binary_headers = {
     "ce-id": str(uuid4),
     "ce-type": "com.pytest.sample.event",
     "ce-source": "<my-test-source>",
-    "ce-specversion": "1.0"
+    "ce-specversion": "1.0",
+    'Ce-Subject': 'objects/Testfile.jpg'
 }
 
 
@@ -41,7 +43,8 @@ def test_endpoint(client, capsys, mocker):
     # Ce-Subject にファイル名が入る objects/filename
     test_headers['Ce-Subject'] = 'objects/Testfile.jpg'
     mock_gcs_object = mocker.patch("main.gcs_object")
-    
+    mocker.patch("main.init_db")
+
     r = client.post('/', headers=test_headers)
     assert r.status_code == 200
     mock_gcs_object.assert_called_once_with(test_headers['Ce-Subject'])
@@ -76,9 +79,17 @@ def test_main_should_get_env_and_output_syslog(client, capsys, mocker):
     test_headers = copy.copy(binary_headers)
     # Ce-Subject にファイル名が入る objects/filename
     test_headers['Ce-Subject'] = 'objects/Testfile.jpg'    
+    env_mock = mocker.patch("os.environ.get", return_value={"key":"value"})
+    mocker.patch("main.init_db")
     r = client.post('/', headers=test_headers)
     assert r.status_code == 200
 
-    env_mock = mocker.patch("os.environ.get", return_value={"key":"value"})
     out, _ = capsys.readouterr()
-#    assert f"Detected change in #Cloud Storage bucket: {test_headers['Ce-Subject']}" in out
+
+def test_download(mocker):
+    mocked_bucket = mocker.patch.object(main.storage.Client, "bucket")
+    main.download_object("bucket", "path", "local_path")
+    mocked_bucket.assert_called_once_with("bucket")
+
+# json ファイルを読む
+
