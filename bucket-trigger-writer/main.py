@@ -122,6 +122,7 @@ def init_db(
         )
 
     # Create tables (if they don't already exist)
+    print("create start")
     with db.connect() as conn:
         conn.execute(
             f"CREATE TABLE IF NOT EXISTS {table_name} "
