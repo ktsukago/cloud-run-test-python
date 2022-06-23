@@ -70,3 +70,9 @@ def test_gcs_object():
 
     test_headers['Ce-Subject'] = 'objects/hoge/Testfile.jpg'
     assert main.gcs_object(test_headers['Ce-Subject']) == 'Testfile.jpg'
+
+# secret の部分をインプットしてoutput されることのテスト
+def test_main_should_get_env_and_output_syslog(capsys, mocker):
+    env_mock = mocker.patch("os.environ.get", return_value={"key":"value"})
+    out, _ = capsys.readouterr()
+#    assert f"Detected change in #Cloud Storage bucket: {test_headers['Ce-Subject']}" in out
